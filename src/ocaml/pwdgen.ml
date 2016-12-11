@@ -177,7 +177,7 @@ let _ = Random.self_init ()
 
 let _ =
   let m = Js.Unsafe.obj [||] in
-  Js.Unsafe.global##pwdGen <- m;
+  Js.Unsafe.global##.pwdGen := m;
 
   let js_generate tpl_string dict =
     let tpl = Parse_template.parse (Js.to_string tpl_string) in
@@ -185,21 +185,21 @@ let _ =
     | Ok tpl ->
       let cfg : generation_config =
         {
-          nouns = Array.map Js.to_string dict##nouns;
-          adjectives = Array.map Js.to_string dict##adjectives;
-          verbs = Array.map Js.to_string dict##verbs;
-          adverbs = Array.map Js.to_string dict##adverbs;
+          nouns = Array.map Js.to_string dict##.nouns;
+          adjectives = Array.map Js.to_string dict##.adjectives;
+          verbs = Array.map Js.to_string dict##.verbs;
+          adverbs = Array.map Js.to_string dict##.adverbs;
           random = fun (l, h) -> l + (Random.int (h - l));
         }
       in
       let r = Js.Unsafe.obj [| |] in
-      r##password <- Js.string (generate_from_template tpl cfg);
+      r##.password := Js.string (generate_from_template tpl cfg);
       r
 
     | Error e ->
       let r = Js.Unsafe.obj [| |] in
-      r##error <- Js.string ("Could not parse template: " ^ e);
+      r##.error := Js.string ("Could not parse template: " ^ e);
       r
   in
 
-  m##generate <- Js.wrap_callback js_generate;
+  m##.generate := Js.wrap_callback js_generate;
